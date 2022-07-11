@@ -1,0 +1,10 @@
+node_modules
+*.env
+.env
+develoment.env
+.production.env
+.env.local
+.env.development
+.env.production
+config.js
+config.env
