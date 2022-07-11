@@ -30,7 +30,7 @@ db.sync()
 	.then(() => console.log('Db synced'))
 	.catch(err => console.log(err));
 	
-	const PORT = process.env.DB_PORT;
+	const PORT = process.env.PORT || 4000;
 	const HOST = process.env.DB_HOST;
 app.listen(PORT,HOST,  () => {
 	console.log('Express app running!! on port '+PORT +' on port '+HOST);
