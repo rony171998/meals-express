@@ -17,7 +17,7 @@ const {
 const { mealExists } = require('../middlewares/meals.middleware');
 const {
 	protectSession,
-	protectUserAccount,
+	protectUserAdmin,
 } = require('../middlewares/auth.middleware');
 const { restaurantExists } = require('../middlewares/restaurants.middleware');
 
@@ -25,21 +25,15 @@ const mealsRouter = express.Router();
 
 mealsRouter.get('/', getAllMeal);
 
-//mealsRouter.use(protectSession);
+mealsRouter.use(protectSession);
 
 mealsRouter.post('/:id',restaurantExists, createMealValidators, createMeal);
-
-mealsRouter.get('/:id',mealExists, getMealById);
-
-mealsRouter.patch('/:id', mealExists, updateMeal);
-
-mealsRouter.delete('/:id', mealExists, deleteMeal);
 
 mealsRouter
 	.use('/:id', mealExists)
 	.route('/:id')
 	.get(getMealById)
-	.patch(protectUserAccount, updateMeal)
-	.delete(protectUserAccount, deleteMeal);
+	.patch(protectUserAdmin, updateMeal)
+	.delete(protectUserAdmin, deleteMeal);
 
 module.exports = { mealsRouter };

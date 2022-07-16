@@ -17,28 +17,22 @@ const {
 const { orderExists } = require('../middlewares/orders.middleware');
 const {
 	protectSession,
-	protectUserAccount,
+	protectOrderAccount,
 } = require('../middlewares/auth.middleware');
 
 const ordersRouter = express.Router();
 
-ordersRouter.get('/', getAllOrder);
+ordersRouter.get('/me', getAllOrder);
 
-//ordersRouter.use(protectSession);
+ordersRouter.use(protectSession);
 
 ordersRouter.post('/', createOrderValidators, createOrder);
-
-ordersRouter.get('/:id',orderExists, getOrderById);
-
-ordersRouter.patch('/:id', orderExists, updateOrder);
-
-ordersRouter.delete('/:id', orderExists, deleteOrder);
 
 ordersRouter
 	.use('/:id', orderExists)
 	.route('/:id')
 	.get(getOrderById)
-	.patch(protectUserAccount, updateOrder)
-	.delete(protectUserAccount, deleteOrder);
+	.patch(protectOrderAccount, updateOrder)
+	.delete(protectOrderAccount, deleteOrder);
 
 module.exports = { ordersRouter };

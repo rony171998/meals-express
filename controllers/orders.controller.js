@@ -1,15 +1,19 @@
 const { Order } = require('../models/order.model');
+const { Meal }= require('../models/meal.model');
 
 const {catchAsync} = require('../utils/catchAsync.util');
 
 const createOrder = catchAsync(async (req, res, next) => {
-	const { mealId, quantity ,userId } = req.body;
+	const { sessionUser } = req;
+	const { mealId, quantity  } = req.body;
+
+	const meal = await Meal.findOne({ where: { id: mealId } });
 
 	const newOrder = await Order.create({
 		mealId,
 		quantity,
-		userId,
-		totalPrice: 0,
+		userId : sessionUser.id,
+		totalPrice: meal.price * quantity,
 	});
 
 	res.status(201).json({
@@ -19,8 +23,12 @@ const createOrder = catchAsync(async (req, res, next) => {
 });
 
 const getAllOrder = catchAsync(async (req, res, next) => {
+	const { sessionUser } = req;
+
+	console.log(sessionUser);
+
 	const orders = await Order.findAll({
-		
+		where: { userId: sessionUser.id , status: 'active' },
 	});
 
 	res.status(200).json({
@@ -30,7 +38,7 @@ const getAllOrder = catchAsync(async (req, res, next) => {
 });
 
 const getOrderById = catchAsync(async (req, res, next) => {
-	const { order } = req;
+	const { order  } = req;
 
 	res.status(200).json({
 		status: 'success',
@@ -50,6 +58,7 @@ const deleteOrder = catchAsync(async (req, res, next) => {
 	const { order } = req;
 
 	await order.update({ status: 'cancelled' });
+	
 	
 	res.status(200).json({ status: 'success' });
 });

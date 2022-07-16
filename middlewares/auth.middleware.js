@@ -7,6 +7,7 @@ const { User } = require('../models/user.model');
 // Utils
 const { catchAsync } = require('../utils/catchAsync.util');
 const { AppError } = require('../utils/appError.util');
+const { Review } = require('../models/review.model');
 
 dotenv.config({ path: './config.env' });
 
@@ -56,5 +57,48 @@ const protectUserAccount = (req, res, next) => {
 
 	next();
 };
+const protectOrderAccount = (req, res, next) => {
+	// const { id } = req.params -> Alternative
+	const { sessionUser, order } = req;
 
-module.exports = { protectSession, protectUserAccount };
+	// If the id's don't match, return error (403)
+	if (sessionUser.id !== order.userId) {
+		return next(new AppError('You do not own this account', 403));
+	}
+
+	next();
+};
+
+const protectUserAdmin = (req, res, next) => {
+	// const { id } = req.params -> Alternative
+	const { sessionUser } = req;
+
+	// If the id's don't match, return error (403)
+	if (sessionUser.role !== 'admin') {
+		return next(new AppError('Only admin access', 403));
+	}
+
+	next();
+};
+
+const protectUserAccountReview = catchAsync (async (req, res, next) => {
+	const { id } = req.params //-> Alternative
+	const { sessionUser } = req;
+
+	const review =await Review.findOne({ where: { id } });
+	console.log(review);
+
+	// If the id's don't match, return error (403)
+	if (sessionUser.id !== review.userId) {
+		return next(new AppError('You do not own this account', 403));
+	}
+
+	next();
+});
+
+module.exports = { protectSession, 
+	protectUserAccount , 
+	protectUserAdmin ,
+	protectUserAccountReview,
+	protectOrderAccount
+}; // Export the middleware 

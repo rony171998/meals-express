@@ -1,6 +1,7 @@
 // Models
 const { User } = require('../models/user.model');
 const { Review } = require('../models/review.model');
+const { Order } = require('../models/order.model');
 
 
 // Utils
@@ -21,6 +22,7 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 				model: Review, 
 			},
 		],
+		
 	});
 
 	res.status(200).json({
@@ -114,14 +116,18 @@ const deleteUser = catchAsync(async (req, res, next) => {
 const getUserOrdersAll = catchAsync(async (req, res, next) => {
 	const { user } = req;
 
-	const orders = await user.getOrders({});
+	const orders = await Order.findAll();
+
+	res.status(200).json({
+		status: 'success',
+		orders,
+	});
 });
 
 const getUserOrderById = catchAsync(async (req, res, next) => {
-	const { user } = req;
-	const { id } = req.params;
+	const { order } = req;
 
-	res.status(200).json({ status: 'success' });
+	res.status(200).json({ status: 'success', order });
 });
 
 module.exports = {

@@ -24,29 +24,33 @@ const { restaurantExists } = require('../middlewares/restaurants.middleware');
 const {
 	protectSession,
 	protectUserAccount,
+	protectUserAdmin,
+	protectUserAccountReview,
 } = require('../middlewares/auth.middleware');
-const { orderExists } = require('../middlewares/orders.middleware');
+const { reviewExists } = require('../middlewares/reviews.middleware');
 
 const restaurantsRouter = express.Router();
 
-restaurantsRouter.get('/', getAllrestaurant);
+
 
 restaurantsRouter.post('/', createRestaurantValidators, createrestaurant);
 
-//restaurantsRouter.use(protectSession);
+restaurantsRouter.use(protectSession);
+
+restaurantsRouter.get('/', getAllrestaurant);
 
 restaurantsRouter.post('/reviews/:id',restaurantExists ,createReviewValidators, postReview);
 
-restaurantsRouter.patch('/reviews/:id', restaurantExists, updateReviewById);
+restaurantsRouter.patch('/reviews/:id', reviewExists, protectUserAccountReview , updateReviewById);
 
-restaurantsRouter.delete('/reviews/:id',restaurantExists, deleteReviewById);
+restaurantsRouter.delete('/reviews/:id',reviewExists, protectUserAccountReview ,deleteReviewById);
 
 
 restaurantsRouter
 	.use('/:id', restaurantExists)
 	.route('/:id')
 	.get(getrestaurantById)
-	.patch(protectUserAccount, updaterestaurant)
-	.delete(protectUserAccount, deleterestaurant);
+	.patch(protectUserAdmin, updaterestaurant)
+	.delete(protectUserAdmin, deleterestaurant);
 
 module.exports = { restaurantsRouter };

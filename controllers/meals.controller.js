@@ -1,4 +1,5 @@
 const { Meal } = require('../models/meal.model');
+const { Restaurant } = require('../models/restaurant.model');
 
 const {catchAsync} = require('../utils/catchAsync.util');
 
@@ -19,9 +20,12 @@ const createMeal = catchAsync(async (req, res, next) => {
 });
 
 const getAllMeal = catchAsync(async (req, res, next) => {
-	const meals = await Meal.findAll({
-		
-	});
+	const meals = await Meal.findAll({ where: { status: 'active' },
+		include: [
+			{
+				model: Restaurant,
+			},
+		] });
 
 	res.status(200).json({
 		status: 'success',
@@ -30,27 +34,27 @@ const getAllMeal = catchAsync(async (req, res, next) => {
 });
 
 const getMealById = catchAsync(async (req, res, next) => {
-	const { meal } = req;
+	const { meals } = req;		
 
 	res.status(200).json({
 		status: 'success',
-		meal,
+		meals,
 	});
 });
 
 const updateMeal = catchAsync(async (req, res, next) => {
-	const { meal } = req;
+	const { meals } = req;
 	const { name,price } = req.body;
 
-	await meal.update({ name,price });
+	await meals.update({ name,price });
 
-	res.status(200).json({ status: 'success' });
+	res.status(200).json({ status: 'success', meals });
 });
 
 const deleteMeal = catchAsync(async (req, res, next) => {
-	const { meal } = req;
+	const { meals } = req;
 
-	await meal.update({ status: 'deleted' });
+	await meals.update({ status: 'deleted' });
 
 	res.status(200).json({ status: 'success' });
 });

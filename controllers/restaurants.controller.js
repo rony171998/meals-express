@@ -20,7 +20,7 @@ const createrestaurant = catchAsync(async (req, res, next) => {
 });
 
 const getAllrestaurant = catchAsync(async (req, res, next) => {
-    const restaurants = await Restaurant.findAll({
+    const restaurants = await Restaurant.findAll({  where: { status: 'active' },
         include: [
             {
                 model: Review, include: { model: User },
@@ -45,11 +45,11 @@ const getrestaurantById = catchAsync(async (req, res, next) => {
 
 const updaterestaurant = catchAsync(async (req, res, next) => {
     const { restaurant } = req;
-    const { title } = req.body;
+    const { name ,address } = req.body;
 
-    await restaurant.update({ title });
+    await restaurant.update({ name, address });
 
-    res.status(200).json({ status: "success" });
+    res.status(200).json({ status: "success", restaurant });
 });
 
 const deleterestaurant = catchAsync(async (req, res, next) => {
@@ -70,6 +70,9 @@ const postReview = catchAsync(async (req, res, next) => {
         comment,
         rating,
     });
+    await restaurant.update({
+        rating: rating
+    });
 
     res.status(200).json({ 
         status: "success", 
@@ -78,10 +81,11 @@ const postReview = catchAsync(async (req, res, next) => {
 });
 
 const updateReviewById = catchAsync(async (req, res, next) => {
-    const { review } = req;
-    const { comment } = req.body;
+    const { review   } = req;
+    const { comment ,rating } = req.body;
 
-    await review.update({ comment });
+    await review.update({ comment, rating });
+
 
     res.status(200).json({ 
         status: "success",

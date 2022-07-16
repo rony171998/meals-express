@@ -30,9 +30,9 @@ usersRouter.post('/', createUserValidators, createUser);
 
 usersRouter.post('/login', login);
 
-//usersRouter.use(protectSession);
-
 usersRouter.get('/', getAllUsers);
+
+usersRouter.use(protectSession);
 
 usersRouter.get('/orders/', getUserOrdersAll);
 
